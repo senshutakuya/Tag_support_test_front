@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 25%;
+    bottom: 0;
+    width: 100%;
+}
+
+#myDropdown {
+    width: 200px;
+    padding: 10px;
+}
+
+/* <!-- マーカーの CSS スタイル --> */
+.marker {
+    display: block;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+}

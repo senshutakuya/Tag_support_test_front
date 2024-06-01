@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <!-- Maplibre GL JS ライブラリを読み込み -->
+    <script src='https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js'></script>
+    <!-- Maplibre GL のスタイルシートを読み込み -->
+    <link href='https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css' rel='stylesheet'/>
+    <!-- ページのための CSS スタイル -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+
+
+<!-- タイトルとクライアントIDの表示 -->
+<h1>Where am I in Sapporo</h1>
+<h2>Your ID: <span id="ws-id"></span></h2>
+
+<!-- 場所を選択するためのドロップダウンメニューと送信ボタン -->
+<form action="" onsubmit="sendMessage(event)">
+    <select id="myDropdown">
+        <option value="">Choose My Location</option>
+        <option value="option1">テレビ塔</option>
+        <option value="option2">時計台</option>
+        <option value="option3">札幌駅</option>
+        <option value="option4">Associeレンタルスペース</option>
+        <option value="option5">中島公園</option>
+        <option value="option6">近代美術館</option>
+    </select>
+    <button>Send</button>
+</form>
+
+<!-- メッセージ表示エリア -->
+<ul id='messages'></ul>
+
+<!-- 地図のコンテナ -->
+<div id='map'></div>
+
+<!-- マッピングと WebSocket 通信を処理するスクリプト -->
+<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+<script src="./location.js"></script>
+</body>
+</html>

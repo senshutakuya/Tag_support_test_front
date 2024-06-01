@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <h2>Your ID: <span id="ws-id"></span></h2>
+        <form action="" onsubmit="sendMessage(event)">
+            <!-- autocomplete属性をoffにする事で入力値の補完がなくなるのでメールアドレス等を補完されなくなる -->
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            // クライアントのIDを作る
+            var client_id = Date.now()
+            // id=ws-idを取得してそこにtextcontentでclient_idを表示する
+            document.querySelector("#ws-id").textContent = client_id;
+            // 指定したURLに対してwebsocket接続をする
+            var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}/chat`);
+
+            // message イベントは、 WebSocket を通してデータを受け取ったときに発生します。
+            ws.onmessage = function(event) {
+                // id=messagesを取得
+                var messages = document.getElementById('messages')
+                // liタグを追加
+                var message = document.createElement('li')
+                // このメソッドは HTML 文字をエスケープするのに利用できます。
+                var content = document.createTextNode(event.data)
+                console.log(event.data)
+
+                // contentをliの子要素の一番最後に追加
+                message.appendChild(content)
+                // messageをmessagesの子要素の一番最後に追加
+                messages.appendChild(message)
+            };
+            // フォームのボタンを押したら実行される処理
+            function sendMessage(event) {
+                // id=messageTextを取得
+                var input = document.getElementById("messageText")
+                // ユーザーがinputタグに入力したメッセージ (input.value) をサーバーに送信します。
+                ws.send(input.value)
+                // メッセージを送信した後に入力フィールドを空にする
+                input.value = ''
+                // このメソッドでフォームによるページのリロードを防ぐ
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
