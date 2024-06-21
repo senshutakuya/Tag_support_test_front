@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名前と画像送信フォーム</title>
+</head>
+<body>
+    <h1>名前と画像を送信するフォーム</h1>
+    <form action="http://18.183.195.124:8000/login" method="post" enctype="multipart/form-data">
+        <label for="name">名前:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="image">画像ファイル:</label>
+        <input type="file" id="image" name="image" accept="image/*" required><br><br>
+
+        <button type="submit">送信</button>
+    </form>
+</body>
+</html>
