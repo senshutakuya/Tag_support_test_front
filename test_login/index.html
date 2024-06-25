@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名前と画像送信フォーム</title>
+</head>
+<body>
+    <h1>名前と画像を送信するフォーム</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="name">名前:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="image">画像ファイル:</label>
+        <input type="file" id="image" name="image" accept="image/*" required><br><br>
+
+        <button type="button" onclick="submitForm()">送信</button>
+        <button type="button" onclick="checkToken()">トークンの残り時間確認</button> <!-- ここに追加 -->
+    </form>
+
+    <script>
+        async function submitForm() {
+            // IDの取得
+            const nameInput = document.getElementById('name');
+            const imageInput = document.getElementById('image');
+            
+            // データの取得
+            const name = nameInput.value;
+            const image = imageInput.files[0];
+
+            try {
+                // サーバーにトークン生成リクエストを送信
+                const response = await fetch("http://18.183.195.124:8000/login", {
+                    method: "POST"
+                });
+                // もしもレスポンスが正しく返ってこなかったら
+                if (!response.ok) {
+                    throw new Error('サーバーエラー');
+                }
+                // レスポンスのデータを取得
+                const data = await response.json();
+                // アクセストークンをレスポンスデータから抜き取る
+                const accessToken = data.access_token;
+
+                // バックエンドにトークンを送信して有効期限を確認
+                try {
+                    const tokenResponse = await fetch("http://18.183.195.124:8000/check-token", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ token: accessToken })
+                    });
+
+                    if (!tokenResponse.ok) {
+                        throw new Error('トークンの有効期限の確認に失敗しました');
+                    }
+
+                    const tokenData = await tokenResponse.json();
+                    const remainingSeconds = tokenData.remaining_seconds;
+                    alert(`トークンの有効期限は ${remainingSeconds} 秒です`);
+
+                    // 名前、画像、トークンを含むオブジェクトの作成
+                    const userData = {
+                        name: name,
+                        image: image,
+                        token: accessToken
+                    };
+
+                    // オブジェクトをJSON形式に変換してローカルストレージに保存
+                    localStorage.setItem("userData", JSON.stringify(userData));
+                    alert("データが正常に保存されました");
+                } catch (error) {
+                    alert("エラーが発生しました: " + error.message);
+                }
+            } catch (error) {
+                alert("エラーが発生しました: " + error.message);
+            }
+        }
+
+        async function checkToken() {
+            try {
+                // ローカルストレージからトークンを取得
+                const storedUserData = localStorage.getItem("userData");
+                if (!storedUserData) {
+                    throw new Error('ユーザーデータが見つかりません');
+                }
+                const userData = JSON.parse(storedUserData);
+                const token = userData.token;
+
+                // サーバーにトークンの残り時間確認リクエストを送信
+                const response = await fetch("http://18.183.195.124:8000/check-token", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                if (!response.ok) {
+                    throw new Error('サーバーエラー');
+                }
+
+                // レスポンスのデータを取得
+                const data = await response.json();
+                const remainingSeconds = data.remaining_seconds;
+
+                alert(`トークンの有効期限は残り ${remainingSeconds} 秒です`);
+            } catch (error) {
+                alert("エラーが発生しました: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
